@@ -33,6 +33,12 @@ pipeline {
                 sh './jenkins/scripts/deliver.sh'
             }
         }
+        stage('SaveaAndUploadArtifact'){
+            steps {
+                archiveArtifacts artifacts: 'target/*.war'
+                sh "curl -X 'POST' 'http://20.125.27.175:8081/service/rest/v1/components?repository=Maven%20Central' " 
+            }
+        }
         stage('DeployToServer') {
             steps {
                 sshPublisher(
@@ -44,7 +50,7 @@ pipeline {
                             sshTransfer(
                                 cleanRemote: false,
                                 excludes: '',
-                                execCommand: 'sudo systemctl stop tomcat && rm -rf /opt/tomcat/latest/webapps/sample/* && unzip /tmp/sample.zip -d /opt/tomcat/latest/webapps && sudo systemctl start tomcat', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/tmp', remoteDirectorySDF: false, removePrefix: 'dist/', sourceFiles: 'dist/sample.zip')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                                execCommand: 'sudo systemctl stop tomcat && rm -rf /opt/tomcat/latest/webapps/sample && unzip /tmp/sample.war -d /opt/tomcat/latest/webapps && sudo systemctl start tomcat', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/tmp', remoteDirectorySDF: false, removePrefix: 'target/', sourceFiles: 'target/sample.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
             }
         }
     }
