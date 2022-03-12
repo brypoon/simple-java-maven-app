@@ -16,6 +16,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'mvn -B -DskipTests clean package'
+                archiveArtifacts artifacts: 'dist/webapp.zip' 'onlyIfSuccessful: true'
             }
         }
         stage('Test') {
