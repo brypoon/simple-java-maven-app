@@ -24,7 +24,6 @@ pipeline {
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'dist/sample.zip'
                     junit 'target/surefire-reports/*.xml'
                 }
             }
